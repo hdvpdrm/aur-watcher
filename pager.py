@@ -10,6 +10,9 @@ signal.signal(signal.SIGINT, handler)
 
 
 inp = sys.stdin.read().split("-"*40)
+if len(inp) == 1 and inp[0] == "nothing was found...\n":
+    print(inp[0])
+    sys.exit(0)
 
 current = 1
 total   = len(inp)
