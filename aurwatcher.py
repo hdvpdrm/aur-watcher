@@ -120,4 +120,3 @@ for id,item in enumerate(response):
     print("-"*40)
     for k in item.keys():
         print("{}:{}".format(k,item[k]))
-    print("-"*40)
