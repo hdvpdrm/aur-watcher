@@ -116,7 +116,6 @@ if not response:
 
 
 for id,item in enumerate(response):
-    print("found item #{}".format(id))
     print("-"*40)
     for k in item.keys():
         print("{}:{}".format(k,item[k]))
