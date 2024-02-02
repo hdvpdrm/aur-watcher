@@ -10,14 +10,16 @@ signal.signal(signal.SIGINT, handler)
 
 
 inp = sys.stdin.read().split("-"*40)
-if len(inp) == 1 and inp[0] == "nothing was found...\n":
+
+ch = lambda s: s in ["nothing was found...\n", "no package to look for...\n"]
+if len(inp) == 1 and ch(inp[0]):
     print(inp[0])
     sys.exit(0)
 
 current = 1
 total   = len(inp)
 
-os.system("clear")
+
 print("{}/{}".format(current,total))
 print(inp[current])
 r_pressed = l_pressed = False
