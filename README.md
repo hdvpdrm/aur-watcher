@@ -5,7 +5,7 @@ script for filtered search through AUR and official repository of Arch Linux.
 this script requires ```requests``` package.<br>
 
 # Usage
-```python p=package_name s=[off|aur] [ o=[pt|ip] ]```
+```python aur-watcher p=package_name s=[off|aur] [ o=[pt|ip] ]```
 
 Available options:<br>
 p - package name<br>
