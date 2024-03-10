@@ -8,5 +8,5 @@ this script requires ```requests``` package.<br>
 ```python p=package_name s=[off|aur]```
 
 Available options:<br>
-p - package name
+p - package name<br>
 s - source(AUR or official repository)
