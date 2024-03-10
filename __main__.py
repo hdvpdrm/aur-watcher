@@ -13,5 +13,5 @@ if __name__ == "__main__":
 
     converted = dict(json.loads(response.text))["results"]
     found_packages = [aurwatcher.extract_required_info(x,args["s"]) for x in converted]
-    aurwatcher.print_result(found_packages,True)
+    aurwatcher.print_result(found_packages,args["o"])
     
