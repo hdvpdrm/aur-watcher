@@ -69,7 +69,7 @@ def get_source_related_keys_list(source):
     if source == "aur":
         return ("Name","Description","Maintainer")
     else:
-        return ("pkgname","pkgdesc","packager")
+        return ("pkgname","pkgdesc","packager","repo","arch","url")
     
 def extract_required_info(response_result,source):
     data = {}
