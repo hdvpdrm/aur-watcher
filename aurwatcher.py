@@ -78,7 +78,7 @@ def compute_request(args):
 
 def get_source_related_keys_list(source):
     if source == "aur":
-        return ("Name","Description","Maintainer")
+        return ("Name","Description","Maintainer","URL","Version","OutOfData")
     else:
         return ("pkgname","pkgdesc","packager","repo","arch","url")
     
