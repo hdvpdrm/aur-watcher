@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
 #Usage example: aurwatcher p=emacs
 
-import requests
-import json
 import sys
 from functools import reduce
-
+import subprocess
 
 def print_help():
     options = '''
-    aurwatcher looks for packages in AUR.\n\n
-    
-    available options:\n
-    p - package\n
-    d - description\n
-    m - maintainer\n
-    n - name\n\n
+    arch-watcher looks for packages in AUR or in official repository.\n\n
 
-    Usage example: aurwatcher p=emacs d=plugin\n
-    Finds every package which name contains emacs and description contains plugin as substring.\n
+    ./arch-watcher p=emacs s=[aur|off]\n
+    p - package name                  \n
+    s - source(aur xor official repo) \n
+    o - output mode(plain text xor inner pager)\n
     '''
     print(options)
     
@@ -30,15 +24,13 @@ def parse_arguments():
     if len(sys.argv) == 1:
         print("error: not enough arguments")
         print_help()
-        exit(0)
+        sys.exit(1)
     
-    table = {} #key is argument name, value is key's value
+    table = {} #key is argument name and value is argument's value
 
     #p - package
-    #d - description
-    #m - maintainer
-    #n - name
-    available_keys = "pdmn"
+    #s - source
+    available_keys = "ps"
 
     for arg in sys.argv[1:]:
         #try to parse argument
@@ -47,7 +39,7 @@ def parse_arguments():
         except ValueError:
             print("incorrect format of argument! it should be a=b")
             print_help()
-            exit(-1)
+            sys.exit(1)
 
         #key should exist as available key and it must not be added already
         if left in available_keys and left not in table.keys():
@@ -55,67 +47,46 @@ def parse_arguments():
         else:
             print("key is used already or doesn't exist!")
             print_help()
-            exit(-1)
+            sys.exit(1)
     
     return table
+
+def compute_request(args):
+    source = args["s"]
+    package = args["p"]
+
+    if source not in ("off","aur"):
+        print("{} is unknown source".format(source))
+        sys.exit(1)
+
+    if source == "aur":
+        return "https://aur.archlinux.org/rpc/?v=5&type=search&arg={}".format(package)
+    else:
+        return  "https://archlinux.org/packages/search/json/?q={}".format(package)
+
+
+def get_source_related_keys_list(source):
+    if source == "aur":
+        return ("Name","Description","Maintainer")
+    else:
+        return ("pkgname","pkgdesc","packager")
     
-def sort_response(response,args):    
-    #switch key from args to correct key that is contained within repsonse
-    switcher = {
-        "d":"Description",
-        "m":"Maintainer",
-        "n":"Name"
-    }
-
-    sorted = []
-
-    keys = list(args.keys())
-    keys.remove("p")#this key isn't used
-
-    counter = 0
-    for element in response["results"]:
-        for a in keys:
-            right_option = switcher[a]
-            value_to_find = args[a]
-
-            check_value = element[right_option]
-            if check_value is not None and value_to_find in check_value:
-                counter+=1
-
-        if counter == len(keys): sorted.append(element)
-        counter = 0
-
-    return sorted
+def extract_required_info(response_result,source):
+    data = {}
+    for key,value in response_result.items():
+        if key in get_source_related_keys_list(source):
+            data[key] = value
+    return data
 
 
-args = parse_arguments()
-if "p" not in args.keys():
-    print("no package to look for...")
-    exit(-1)
+def __print_all(response):
+    for id,item in enumerate(response):
+        print("found item #{}".format(id))
+        print("-"*40)
+        for k in item.keys():
+            print("{}:{}".format(k,item[k]))
+        print("-"*40)
 
-
-request = "https://aur.archlinux.org/rpc/?v=5&type=search&arg={}".format(args["p"])
-response = requests.get(request)
-
-if response.status_code != 200:
-    print("can not access AUR...")
-    exit(0)
-
-response = dict(json.loads(response.text))
-
-
-#if there is only one key then it's p, because p is required key, other ones are optional
-#so just pass all results, otherwise sort it
-if len(args.keys()) != 1:
-    response = sort_response(response,args)
-else:
-    response = response["results"]
-
-if not response:
-    print("nothing was found...")
-
-
-for id,item in enumerate(response):
-    print("-"*40)
-    for k in item.keys():
-        print("{}:{}".format(k,item[k]))
+def print_result(response,use_pager=False):
+    __print_all(response)
+    
