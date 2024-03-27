@@ -70,6 +70,8 @@ def extract_required_info(response_result,source):
 
 
 def print_result(response, paging_mode=False):
+    paging_mode = True if paging_mode == "ip" else False
+    
     for id,item in enumerate(response):
         print("found item #{}".format(id))
         print("-"*40)
