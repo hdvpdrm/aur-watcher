@@ -1,4 +1,6 @@
 import sys, tty, termios
+
+
 def read_single_char():
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)

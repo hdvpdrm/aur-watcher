@@ -7,25 +7,6 @@ from functools import reduce
 import subprocess
 from getch import read_single_char
 
-def print_help():
-    options = '''
-    arch-watcher looks for packages in AUR or in official repository.\n\n
-
-    ./arch-watcher p=emacs s=[aur|off] o=[pt|ip]\n
-    p - package name                  \n
-    s - source(aur xor official repo) \n
-    o - output mode(plain text xor inner pager) plain text is choosen by default\n
-    '''
-    print(options)
-    
-def process_mode(mode_value):
-    if mode_value not in ("pt","ip"):
-        print("incorrect value for ouput mode {}".format(mode_value))
-        print_help()
-        sys.exit(1)
-
-    return False if mode_value == "pt" else True
-
 def prepare_arguments():
     parser = argparse.ArgumentParser(prog="aurwatcher",description="script looks for packages in AUR or in official repository.")
     parser.add_argument("p",help="defines package-name substring to look for")

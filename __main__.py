@@ -2,8 +2,14 @@ import aurwatcher
 import sys
 import requests
 import json
+import os
 
 if __name__ == "__main__":
+    #read getch.py to see the reason
+    if os.name != "posix":
+        print("Sorry! This script won't run on non-posix system!")
+        system.exit(1)
+    
     args = aurwatcher.parse_arguments()
 
     response = requests.get(aurwatcher.compute_request(args))
