@@ -5,6 +5,7 @@ import json
 
 if __name__ == "__main__":
     args = aurwatcher.parse_arguments()
+
     response = requests.get(aurwatcher.compute_request(args))
     if response.status_code != 200:
         print("request failed with code {}".format(response.status_code))

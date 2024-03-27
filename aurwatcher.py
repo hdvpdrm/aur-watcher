@@ -2,6 +2,7 @@
 #Usage example: aurwatcher p=emacs
 
 import sys
+import argparse
 from functools import reduce
 import subprocess
 from getch import read_single_char
@@ -24,49 +25,27 @@ def process_mode(mode_value):
         sys.exit(1)
 
     return False if mode_value == "pt" else True
+
+def prepare_arguments():
+    parser = argparse.ArgumentParser(prog="aurwatcher",description="script looks for packages in AUR or in official repository.")
+    parser.add_argument("p",help="defines package-name substring to look for")
+    parser.add_argument("-s","--source",help="choose source of finding.",choices=["AUR","off"])
+    parser.add_argument("-o","--output",help="choose output mode(plain text xor inner pager)",choices=["pt","ip"])
+    return parser.parse_args()
+
 def parse_arguments():
-    '''returns the hash-table of arguments'''
+    args = vars(prepare_arguments())
+    result = {}
+    result["o"] = "pt" if args["output"] is None else args["output"]
+    result["s"] = "AUR" if args["source"] is None else args["source"]
+    result["p"] =args["p"]
+    return result
     
-    #at least there is only one argument - the script name
-    if len(sys.argv) == 1:
-        print("error: not enough arguments")
-        print_help()
-        sys.exit(1)
-    
-    table = {} #key is argument name and value is argument's value
-    
-    #p - package
-    #s - source
-    #o - output
-    available_keys = "pso"
-
-    for arg in sys.argv[1:]:
-        #try to parse argument
-        try:
-            left, right = arg.split("=")
-        except ValueError:
-            print("incorrect format of argument! it should be a=b")
-            print_help()
-            sys.exit(1)
-
-        #key should exist as available key and it must not be added already
-        if left in available_keys and left not in table.keys():
-            table[left] = right
-            if left == "o":
-                table[left] = process_mode(right)
-        else:
-            print("key is used already or doesn't exist!")
-            print_help()
-            sys.exit(1)
-
-    if "o" not in table.keys(): table["o"] = False #plain text by default
-    return table
-
 def compute_request(args):
     source = args["s"]
     package = args["p"]
 
-    if source not in ("off","aur"):
+    if source.lower() not in ("off","aur"):
         print("{} is unknown source".format(source))
         sys.exit(1)
 
