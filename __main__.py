@@ -8,7 +8,7 @@ if __name__ == "__main__":
     #read getch.py to see the reason
     if os.name != "posix":
         print("Sorry! This script won't run on non-posix system!")
-        system.exit(1)
+        sys.exit(1)
     
     args = aurwatcher.parse_arguments()
 
