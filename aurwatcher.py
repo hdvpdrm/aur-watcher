@@ -42,7 +42,7 @@ def compute_request(args):
         print("{} is unknown source".format(source))
         sys.exit(1)
 
-    if source == "aur":
+    if source == "AUR":
         return "https://aur.archlinux.org/rpc/?v=5&type=search&arg={}".format(package)
     else:
         return  "https://archlinux.org/packages/search/json/?q={}".format(package)
@@ -50,7 +50,7 @@ def compute_request(args):
 
 def get_source_related_keys_list(source):
     '''since response is big json file, then we need only specific keys'''
-    if source == "aur":
+    if source == "AUR":
         return ("Name","Description","Maintainer","URL","Version","OutOfData")
     else:
         return ("pkgname","pkgdesc","packager","repo","arch","url")
