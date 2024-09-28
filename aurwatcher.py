@@ -4,6 +4,7 @@
 import sys
 import argparse
 import subprocess
+from functools import reduce
 from getch import read_single_char
 
 def prepare_arguments():
@@ -63,6 +64,23 @@ def extract_required_info(response_result,source):
             data[key] = value
     return data
 
+def __print_items(item):
+    print("-"*40)
+    for k in item.keys():
+        print("{}:{}".format(k,item[k]))
+    print("-"*40)
+
+def __save_result(item,filename):
+    values = list()
+    for k in item.keys():
+        values.append("{}:{}".format(k,item[k]))
+    data = str(reduce(lambda a,b: a+'\n'+b,values))
+    try:
+        with open(filename,"w") as f:
+            f.write(data)
+    except Exception:
+        print("failed write to file!")
+    
 def print_result(response, paging_mode=False):
     '''print output as plain text or using "inner pager"'''
     paging_mode = True if paging_mode == "ip" else False
@@ -70,15 +88,18 @@ def print_result(response, paging_mode=False):
     for i,item in enumerate(response):
         counter = int(i/3)
         print("found item #{}".format(counter))
-
-            
-        print("-"*40)
-        for k in item.keys():
-            print("{}:{}".format(k,item[k]))
-        print("-"*40)
+        __print_items(item)
         if paging_mode:
-            if read_single_char() == 'q':
+            answer = read_single_char()
+            if answer == 'q':
                 sys.exit(0)
+            elif answer == 'w':
+                subprocess.run(["clear"])
+                infile = input("file to write:")
+                __save_result(item,infile)
+                subprocess.run(["clear"])
+                __print_items(item)
+                sys.exit()
             else:
                 subprocess.run(["clear"]) #check isn't required here, because clear won't fail
         
