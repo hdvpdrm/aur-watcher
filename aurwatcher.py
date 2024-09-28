@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/pusr/bin/env python3
 #Usage example: aurwatcher p=emacs
 
 import os
@@ -6,6 +6,8 @@ import sys
 import argparse
 import subprocess
 import readline
+import curses
+
 from functools import reduce
 from getch import read_single_char
 
@@ -82,23 +84,24 @@ def __save_result(item,filename):
             f.write(data)
     except Exception:
         print("failed write to file!")
-    
+
+
 def print_result(response, paging_mode=False):
     '''print output as plain text or using "inner pager"'''
     paging_mode = True if paging_mode == "ip" else False
 
+    fix_counter = False
     for i,item in enumerate(response):
-        counter = int(i/3)
+        counter = int(i/3) if fix_counter else i
         print("found item #{}".format(counter))
         __print_items(item)
         if paging_mode:
-            answer = read_single_char()
-            if answer == 'q':
+            answer = read_single_char(fix_counter)
+            if str(answer) == 'q':
                 sys.exit(0)
             elif answer == 'w':
                 subprocess.run(["clear"])
                 infile = os.path.expanduser(input("file to write:"))
-                
                 if infile == "q":
                     __print_items(item)
                     sys.exit()
