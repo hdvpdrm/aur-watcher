@@ -66,9 +66,12 @@ def extract_required_info(response_result,source):
 def print_result(response, paging_mode=False):
     '''print output as plain text or using "inner pager"'''
     paging_mode = True if paging_mode == "ip" else False
-    
+
     for i,item in enumerate(response):
-        print("found item #{}".format(i))
+        counter = int(i/3)
+        print("found item #{}".format(counter))
+
+            
         print("-"*40)
         for k in item.keys():
             print("{}:{}".format(k,item[k]))
@@ -78,5 +81,6 @@ def print_result(response, paging_mode=False):
                 sys.exit(0)
             else:
                 subprocess.run(["clear"]) #check isn't required here, because clear won't fail
+        
 
     
