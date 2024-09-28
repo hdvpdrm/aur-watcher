@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 #Usage example: aurwatcher p=emacs
 
+import os
 import sys
 import argparse
 import subprocess
+import readline
 from functools import reduce
 from getch import read_single_char
 
@@ -95,7 +97,12 @@ def print_result(response, paging_mode=False):
                 sys.exit(0)
             elif answer == 'w':
                 subprocess.run(["clear"])
-                infile = input("file to write:")
+                infile = os.path.expanduser(input("file to write:"))
+                
+                if infile == "q":
+                    __print_items(item)
+                    sys.exit()
+                    
                 __save_result(item,infile)
                 subprocess.run(["clear"])
                 __print_items(item)
